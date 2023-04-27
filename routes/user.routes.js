@@ -59,7 +59,7 @@ userRouter.post("/login", async (req, res) => {
     if (user.length>0) {
       bcrypt.compare(password, hash_pass, (err, result) => {
         if (result) {
-          const token = jwt.sign({ userID: user._id }, "sitansu");
+          const token = jwt.sign({ userID: user[0]._id }, "sitansu");
           res
             .status(200)
             .send({ msg: `User logged in Successfull`, token: token });
@@ -82,7 +82,9 @@ userRouter.get("/getProfile", authentication, async (req, res) => {
   try {
     // console.log(userID)
     const user = await Usermodel.find({ _id: userID });
-    res.status(200).json(user[0]);
+    let exit_user = user[0];
+    console.log(exit_user)
+    res.status(200).json(exit_user);
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: error.message });
