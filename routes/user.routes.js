@@ -82,7 +82,7 @@ userRouter.get("/getProfile", authentication, async (req, res) => {
   try {
     // console.log(userID)
     const user = await Usermodel.find({ _id: userID });
-    res.status(200).json(user);
+    res.status(200).json(user[0]);
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: error.message });
