@@ -19,8 +19,8 @@ userRouter.get("/", async (req, res) => {
 userRouter.post("/register", async (req, res) => {
   const { img, name, bio, phone, email, password } = req.body;
   try {
-    const exist_user = await Usermodel.findOne({ email: email });
-    if (exist_user) {
+    const exist_user = await Usermodel.find({ email: email });
+    if (exist_user.length>0) {
       res.status(400).send({ msg: `User already Exists please try to login` });
     } else {
       bcrypt.hash(password, 5, async (err, hash) => {
@@ -53,10 +53,10 @@ userRouter.post("/register", async (req, res) => {
 userRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await Usermodel.findOne({ email: email });
+    const user = await Usermodel.find({ email: email });
     const hash_pass = user.password;
     console.log(hash_pass);
-    if (user) {
+    if (user.length>0) {
       bcrypt.compare(password, hash_pass, (err, result) => {
         if (result) {
           const token = jwt.sign({ userID: user._id }, "sitansu");
@@ -81,7 +81,7 @@ userRouter.get("/getProfile", authentication, async (req, res) => {
   const userID = req.body.ID;
   try {
     // console.log(userID)
-    const user = await Usermodel.findOne({ _id: userID });
+    const user = await Usermodel.find({ _id: userID });
     res.status(200).json(user);
   } catch (error) {
     console.log(error);
@@ -94,8 +94,8 @@ userRouter.patch("/edit", authentication, async (req, res) => {
   const userId = req.body.ID;
   const payload = req.body;
   try {
-    const user = await Usermodel.findOne({ _id: userId });
-    if (user) {
+    const user = await Usermodel.find({ _id: userId });
+    if (user.length>0) {
       const updated_user = await Usermodel.findByIdAndUpdate(
         { _id: userId },
         payload
